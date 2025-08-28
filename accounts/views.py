@@ -56,7 +56,8 @@ class LogoutView(APIView):
         return self._logout(request)
 
     def get(self, request):
-        return self._logout(request)
+        return self._logout(request)   
+    
 
     def _logout(self, request):
         refresh_token = request.data.get("refresh") or request.query_params.get("refresh")
