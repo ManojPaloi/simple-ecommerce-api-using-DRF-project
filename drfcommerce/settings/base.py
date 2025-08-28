@@ -120,6 +120,7 @@ REST_FRAMEWORK = {
     ],
 }
 
+    
 
 # JWT Settings
 SIMPLE_JWT = {
