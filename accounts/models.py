@@ -73,8 +73,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     # For authentication
-    USERNAME_FIELD = "email"   # default login field
-    REQUIRED_FIELDS = []       # when creating superuser
+    USERNAME_FIELD = "email"  
+    REQUIRED_FIELDS = []       
 
     def save(self, *args, **kwargs):
         """Ensure username is unique when saving"""
