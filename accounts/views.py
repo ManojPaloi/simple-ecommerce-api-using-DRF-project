@@ -73,6 +73,8 @@ class LogoutView(APIView):
 
 
 
+
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     """Get or update user profile"""
     serializer_class = ProfileUpdateSerializer
