@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 UserModel = get_user_model()
 
@@ -11,19 +12,24 @@ class EmailOrUsernameModelBackend(ModelBackend):
     """
 
     def authenticate(self, request, username=None, password=None, **kwargs):
-        if username is None:
-            username = kwargs.get(UserModel.USERNAME_FIELD)
+        if username is None or password is None:
+            return None
 
         try:
-            # Try login by email
-            user = UserModel.objects.get(email=username)
+            # Look up by email OR username (case insensitive)
+            user = UserModel.objects.get(
+                Q(email__iexact=username) | Q(username__iexact=username)
+            )
         except UserModel.DoesNotExist:
+            return None
+        except UserModel.MultipleObjectsReturned:
+            # In rare cases of duplicates, fall back to email as unique
             try:
-                # Try login by username
-                user = UserModel.objects.get(username=username)
+                user = UserModel.objects.get(email__iexact=username)
             except UserModel.DoesNotExist:
                 return None
 
+        # Validate password
         if user.check_password(password) and self.user_can_authenticate(user):
             return user
         return None

@@ -1,4 +1,6 @@
-# Python
+# ----------------------------
+# Python / Django
+# ----------------------------
 __pycache__/
 *.py[cod]
 *.pyo
@@ -8,15 +10,6 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-
-# Virtual environment
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Django stuff
 *.log
 *.pot
 *.pyc
@@ -24,17 +17,56 @@ venv.bak/
 db.sqlite3
 media/
 staticfiles/
+local_settings.py
+migrations/__pycache__/
+*.mo
 
-# VS Code
+# ----------------------------
+# Virtual environments
+# ----------------------------
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ----------------------------
+# Node.js / Next.js
+# ----------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+out/
+coverage/
+.cache/
+.eslintcache
+stylelintcache
+.next.cache/
+
+# ----------------------------
+# Environment / secrets
+# ----------------------------
+.env
+.env.*
+!.env.example
+
+# ----------------------------
+# Editors / IDEs
+# ----------------------------
 .vscode/
 *.code-workspace
-
-# PyCharm
 .idea/
+*.sublime-project
+*.sublime-workspace
 
-# OS files
+# ----------------------------
+# OS / Misc
+# ----------------------------
 .DS_Store
 Thumbs.db
-
-# Environment variables
-*.env
+*.swp
+*.swo

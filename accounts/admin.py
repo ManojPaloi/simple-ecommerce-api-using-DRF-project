@@ -5,22 +5,24 @@ from .models import CustomUser
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    """Admin panel configuration for CustomUser model"""
+
     model = CustomUser
 
-    # Fields shown in the user list
+    # Fields shown in the list view
     list_display = (
         "id", "email", "username", "first_name", "last_name",
-        "mobile_no", "address", "pin_code", "is_staff", "is_active"
+        "mobile_no", "is_staff", "is_active", "created_at"
     )
     list_filter = ("is_staff", "is_superuser", "is_active")
 
-    # Make username read-only
+    # Read-only fields (auto-managed)
     readonly_fields = ("username", "created_at", "updated_at")
 
-    # Field layout for editing existing users
+    # Layout for editing an existing user
     fieldsets = (
         (None, {"fields": ("email", "username", "password")}),
-        ("Personal Info", {
+        ("Personal Information", {
             "fields": ("first_name", "last_name", "mobile_no", "address", "pin_code")
         }),
         ("Permissions", {
@@ -31,19 +33,23 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-    # Fields used when creating a new user
+    # Layout for creating a new user
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "first_name", "last_name", "mobile_no", "address", "pin_code", "password1", "password2"),
+            "fields": (
+                "email", "first_name", "last_name", "mobile_no",
+                "address", "pin_code", "password1", "password2"
+            ),
         }),
     )
 
+    # Search and ordering
     search_fields = ("email", "username", "mobile_no", "first_name", "last_name")
     ordering = ("-created_at",)
 
-    # Show username in the header (object display)
     def get_object(self, request, object_id, from_field=None):
+        """Show custom header in admin detail view"""
         obj = super().get_object(request, object_id, from_field)
         if obj:
             obj._meta.verbose_name = f"User: {obj.username}"

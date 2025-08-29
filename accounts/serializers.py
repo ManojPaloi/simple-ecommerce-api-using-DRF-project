@@ -5,13 +5,19 @@ from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """User serializer (all fields, safe for API response)"""
+    """
+    Full User Serializer
+
+    - Serializes all fields of `CustomUser`.
+    - Safe for API responses because sensitive fields (like password) 
+      are write-only and admin flags are read-only.
+    """
 
     class Meta:
         model = CustomUser
         fields = "__all__"
         extra_kwargs = {
-            "password": {"write_only": True},   # never expose password
+            "password": {"write_only": True},   # never return password in API
             "is_superuser": {"read_only": True},
             "is_staff": {"read_only": True},
             "groups": {"read_only": True},
@@ -20,21 +26,42 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """Serializer for user registration"""
+    """
+    User Registration Serializer
+
+    - Validates and creates new users.
+    - Requires a minimum 6-character password.
+    - Exposes only safe fields for registration (no admin flags).
+    """
     password = serializers.CharField(write_only=True, min_length=6)
 
     class Meta:
         model = CustomUser
-        fields = [ "first_name", "last_name","email", "mobile_no", "address", "pin_code", "password" ]
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "mobile_no",
+            "address",
+            "pin_code",
+            "password",
+        ]
 
     def create(self, validated_data):
+        # Extract password separately since `create_user` handles hashing
         password = validated_data.pop("password")
         user = CustomUser.objects.create_user(password=password, **validated_data)
         return user
 
 
 class LoginSerializer(serializers.Serializer):
-    """Serializer for login with email + password"""
+    """
+    User Login Serializer
+
+    - Accepts email and password.
+    - Uses Django's `authenticate` to check credentials.
+    - Returns the authenticated user if valid, else raises error.
+    """
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
@@ -45,6 +72,7 @@ class LoginSerializer(serializers.Serializer):
         if not email or not password:
             raise serializers.ValidationError("Both email and password are required.")
 
+        # Authenticate user with provided credentials
         user = authenticate(
             request=self.context.get("request"),
             email=email,
@@ -62,19 +90,28 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
-    """Serializer for updating user profile (username read-only)"""
+    """
+    Profile Update Serializer
+
+    - Allows editing personal details of a user.
+    - Username is read-only (cannot be changed after registration).
+    """
     username = serializers.CharField(read_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ["username", "first_name", "last_name", "mobile_no", "address", "pin_code"]
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "mobile_no",
+            "address",
+            "pin_code",
+        ]
 
     def update(self, instance, validated_data):
-        # username is read_only, so it won't be updated
+        # Apply updates to allowed fields only
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         return instance
-
-
-
